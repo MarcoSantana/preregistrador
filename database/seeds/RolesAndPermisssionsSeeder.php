@@ -25,7 +25,7 @@ class RolesAndPermissionsSeeder extends Seeder
         $role->givePermissionTo('unpublish documents');
 
         $role = Role::create(['name' => 'worker']);
-        $role->givePermissionTo(['publish document', 'unpublish document']);
+        $role->givePermissionTo(['publish documents', 'unpublish documents']);
 
         $role = Role::create(['name' => 'super-admin']);
         $role->givePermissionTo(Permission::all());
