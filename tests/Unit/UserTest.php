@@ -30,13 +30,9 @@ class UserTest extends TestCase
 
     public function testUserCanBeAssignedRoles()
     {
-        // $user = User::first();
-        // $this->assertInstanceOf('\App\User', $user);
         $this->assertInstanceOf('\App\User', $this->user);
         $role = Role::create(['name' => 'worker']);
-        // $user->assignRole('worker');
         $this->user->assignRole('worker');
-        // $this->assertTrue($user->hasAnyRole(Role::all()));
         $this->assertTrue($this->user->hasAnyRole(Role::all()));
     }
 }
