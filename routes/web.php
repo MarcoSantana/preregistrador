@@ -19,8 +19,8 @@ Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 
-// Route::get('/users', 'UserController@show');
+Route::get('/users', 'UserController@index');
 // Resource::withoutWrapping();
-Route::get('/users', function () {
-    return response(\App\User::all());
-});
+// Route::get('/users', function () {
+    // return response(\App\User::all());
+// });
