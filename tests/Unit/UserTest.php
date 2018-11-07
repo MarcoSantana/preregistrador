@@ -39,15 +39,20 @@ class UserTest extends TestCase
     /** @test */
     public function test_ShowUsers()
     {
-        // $this->get('/users')->seeJson(['name' => $this->user->name]);
-        /* $response = $this->json('GET', '/users'); */
         $response = $this->get('/users');
-
-            $response
-                ->assertStatus(200)
-                ->assertJson(
-                    \App\User::all()
-                );
+        $response ->assertStatus(200) ;
+        $response->assertJsonStructure(
+            [
+                [
+                        'id',
+                        'name',
+                        'email',
+                        'email_verified_at',
+                        'created_at',
+                        'updated_at'
+                ]
+            ]
+        );
     }
-    
+
 }
