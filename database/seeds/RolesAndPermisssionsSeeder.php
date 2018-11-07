@@ -15,8 +15,8 @@ class RolesAndPermissionsSeeder extends Seeder
         Permission::create(['name' => 'delete documents']);
         Permission::create(['name' => 'publish documents']);
         Permission::create(['name' => 'unpublish documents']);
-        // Permission::create(['name' => 'create jobs']);
-        // Permission::create(['name' => 'see jobs']);
+        Permission::create(['name' => 'create jobs']);
+        Permission::create(['name' => 'see jobs']);
 
         // create roles and assign created permissions
 
