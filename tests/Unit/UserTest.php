@@ -35,4 +35,19 @@ class UserTest extends TestCase
         $this->user->assignRole('worker');
         $this->assertTrue($this->user->hasAnyRole(Role::all()));
     }
+
+    /** @test */
+    public function test_ShowUsers()
+    {
+        // $this->get('/users')->seeJson(['name' => $this->user->name]);
+        /* $response = $this->json('GET', '/users'); */
+        $response = $this->get('/users');
+
+            $response
+                ->assertStatus(200)
+                ->assertJson(
+                    \App\User::all()
+                );
+    }
+    
 }
