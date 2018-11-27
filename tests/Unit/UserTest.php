@@ -3,12 +3,14 @@
 namespace Tests\Unit;
 
 use Tests\TestCase;
+use PHPUnit\DbUnit\TestCaseTrait;
 use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use \App\User as User;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use \Spatie\Permission\Traits\HasRole;
 use Spatie\Permission\Models\Role;
+use Illuminate\Foundation\Testing\WithoutMiddleware;
 
 
 class UserTest extends TestCase
@@ -55,4 +57,59 @@ class UserTest extends TestCase
         );
     }
 
+    /** @test */
+    public function test_ShowUser()
+{
+    $response = $this->get("/users/{$this->user->id}");
+    $response->assertStatus(200);
+
+    $response->assertJsonStructure(
+            [
+                    'id',
+                    'name',
+                    'email',
+                    'email_verified_at',
+                    'created_at',
+                    'updated_at'
+            ]
+    );
+
+    $response->assertJson(
+            [
+                    'id' => $this->user->id,
+                    'name' => $this->user->name,
+                    'email' => $this->user->email,
+                    'email_verified_at' => $this->user->email_verified_at,
+                    'created_at' => $this->user->created_at,
+                    'updated_at' => $this->user->updated_at
+            ]
+    );
+
+    }
+
+    /** @test */
+    public function test_CreateUser()
+    {
+    $this->withoutMiddleware();
+    // $this->newUser = factory(\App\User::class)->create();
+    $this->newUser = factory(\App\User::class)->make();
+
+    $user = factory(\App\User::class)->create();
+
+
+    $response = $this->actingAs($user)->post('users', [
+        'name' => $this->newUser->name,
+        'email' => $this->newUser->email,
+        'password' => $this->newUser->password,
+    ]);
+    $response
+            ->assertStatus(201)
+            ->assertExactJson([
+                'created' => true,
+            ]) ;
+
+            $this->assertDatabaseHas('users', [
+                'email' => $this->newUser->email,
+            ]);
+    }
 }

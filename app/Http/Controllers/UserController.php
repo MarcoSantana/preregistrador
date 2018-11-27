@@ -3,6 +3,7 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
+use \App\User;
 
 class UserController extends Controller
 {
@@ -22,7 +23,7 @@ class UserController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function create()
+    public function create(Request $request)
     {
         //
     }
@@ -36,6 +37,23 @@ class UserController extends Controller
     public function store(Request $request)
     {
         //
+        /*
+        $validatedData = $request->validate([
+            'email' => 'required|email|unique:users',
+            'name' => 'required|string|max:50',
+            'password' => 'required'
+
+        ]);
+        return response()->json($user, 201);
+        */
+        $user = User::create([
+            'name' => $request->name,
+            'email' => $request->email,
+            'password' => $request->password,
+        ]); 
+        return response()->json([
+            'created' => true
+        ], 201);
     }
 
     /**
@@ -46,7 +64,7 @@ class UserController extends Controller
      */
     public function show($id)
     {
-        //
+       return User::find($id);
     }
 
     /**

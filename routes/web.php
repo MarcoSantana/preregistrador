@@ -19,8 +19,9 @@ Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
 
+// Users
 Route::get('/users', 'UserController@index');
-// Resource::withoutWrapping();
-// Route::get('/users', function () {
-    // return response(\App\User::all());
-// });
+Route::get('/users/{id}', 'UserController@show');
+Route::post('/users', 'UserController@store' );
+// Route::apiResource('users', 'UserController');
+
