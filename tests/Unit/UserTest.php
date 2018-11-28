@@ -90,14 +90,11 @@ class UserTest extends TestCase
     /** @test */
     public function test_CreateUser()
     {
-    $this->withoutMiddleware();
-    // $this->newUser = factory(\App\User::class)->create();
     $this->newUser = factory(\App\User::class)->make();
 
-    $user = factory(\App\User::class)->create();
 
 
-    $response = $this->actingAs($user)->post('users', [
+    $response = $this->actingAs($this->user)->post('users', [
         'name' => $this->newUser->name,
         'email' => $this->newUser->email,
         'password' => $this->newUser->password,
@@ -111,5 +108,28 @@ class UserTest extends TestCase
             $this->assertDatabaseHas('users', [
                 'email' => $this->newUser->email,
             ]);
+    }
+    /** @test */
+    public function test_CanNotCreateUserWithInvalidName()
+    {
+        $response = $this->actingAs($this->user)->post('users', [
+            'name' => str_repeat('a', 51),
+            'email' => $this->user->email,
+            'password' => 'secret', 
+        ]);
+        $response->assertStatus(302);
+        $response->assertSessionHasErrors();
+    }
+
+    /** @test */
+    public function test_CanNotCreateUserWithInvalidEmail()
+    {
+        $response = $this->actingAs($this->user)->post('users', [
+            'name' => $this->user->name,
+            'email' => str_repeat('a', 256),
+            'password' => 'secret', 
+        ]);
+        $response->assertStatus(302);
+        $response->assertSessionHasErrors();
     }
 }
