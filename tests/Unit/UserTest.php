@@ -91,9 +91,6 @@ class UserTest extends TestCase
     public function test_CreateUser()
     {
     $this->newUser = factory(\App\User::class)->make();
-
-
-
     $response = $this->actingAs($this->user)->post('users', [
         'name' => $this->newUser->name,
         'email' => $this->newUser->email,
@@ -115,7 +112,7 @@ class UserTest extends TestCase
         $response = $this->actingAs($this->user)->post('users', [
             'name' => str_repeat('a', 51),
             'email' => $this->user->email,
-            'password' => 'secret', 
+            'password' => 'secret',
         ]);
         $response->assertStatus(302);
         $response->assertSessionHasErrors();
@@ -131,5 +128,14 @@ class UserTest extends TestCase
         ]);
         $response->assertStatus(302);
         $response->assertSessionHasErrors();
+    }
+
+    /** @test */
+    public function test_DeleteUser()
+    {
+        $response = $this->actingAs($this->user)
+                  ->delete("users/{$this->user->id}");
+        $response->assertStatus(200);
+        $this->assertDatabaseMissing('users', ['id' => $this->user->id]);
     }
 }
