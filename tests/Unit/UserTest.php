@@ -131,11 +131,6 @@ class UserTest extends TestCase
     }
 
     /** @test */
-    /**
-     * undocumented function
-     *
-     * @return void
-     */
     public function test_UpdatesValidUser()
     {
         $this->newUser = factory(\App\User::class)->make();
@@ -156,11 +151,6 @@ class UserTest extends TestCase
     }
 
     /** @test */
-    /**
-     * undocumented function
-     *
-     * @return void
-     */
     public function test_CanNotUpdateInvalidUser()
     {
         $this->newUser = factory(\App\User::class)->create();
