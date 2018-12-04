@@ -150,6 +150,8 @@ class UserTest extends TestCase
                 'name' => $this->newUser->name
             ]
         );
+        // $this->assertTrue
+
         $response->assertStatus(200);
     }
 
@@ -161,13 +163,10 @@ class UserTest extends TestCase
      */
     public function test_CanNotUpdateInvalidUser()
     {
-        echo $this->user->name;
-        $attributes = factory(User::class)->raw(
-            [
-                'name' => 'i',
-            ]
-        );
-        $response = $this->put("users/{$this->user->id}", $attributes);
+        $this->newUser = factory(\App\User::class)->create();
+        // echo $this->user->name;
+        $attributes = ['name' => 'i',];
+        $response = $this->put("users/{$this->user->id}", []);
         $response->assertStatus(422);
     }
  

@@ -4,6 +4,7 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use \App\User;
+use \App\Http\Requests\UserRequest;
 
 class UserController extends Controller
 {
@@ -34,7 +35,7 @@ class UserController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(UserRequest $request)
     {
         //
         $validatedData = $request->validate([
@@ -83,7 +84,7 @@ class UserController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(UserRequest $request, $id)
     {
         //
         $validatedData = $request->validate(
@@ -93,9 +94,6 @@ class UserController extends Controller
             ]
         );
         $user = User::findOrFail($id);
-        /* slime */
-        /* endslime */
-        dd($request);
         $user->update($request->all());
         return response(200);
 
