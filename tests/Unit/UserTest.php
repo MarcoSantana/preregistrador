@@ -31,7 +31,7 @@ class UserTest extends TestCase
     }
 
     public function testUserCanBeAssignedRoles()
-    {
+     {
         $this->assertInstanceOf('\App\User', $this->user);
         $role = Role::create(['name' => 'worker']);
         $this->user->assignRole('worker');
@@ -124,18 +124,60 @@ class UserTest extends TestCase
         $response = $this->actingAs($this->user)->post('users', [
             'name' => $this->user->name,
             'email' => str_repeat('a', 256),
-            'password' => 'secret', 
+            'password' => 'secret',
         ]);
         $response->assertStatus(302);
         $response->assertSessionHasErrors();
     }
 
     /** @test */
+    /**
+     * undocumented function
+     *
+     * @return void
+     */
+    public function test_UpdatesValidUser()
+    {
+        $this->newUser = factory(\App\User::class)->make();
+        $attributes = factory(User::class)->raw(
+            [
+                'name' => $this->newUser->name,
+            ]
+        );
+        $response = $this->put("users/{$this->user->id}", $attributes);
+        $this->assertDatabaseHas('users',
+            [
+                'name' => $this->newUser->name
+            ]
+        );
+        $response->assertStatus(200);
+    }
+
+    /** @test */
+    /**
+     * undocumented function
+     *
+     * @return void
+     */
+    public function test_CanNotUpdateInvalidUser()
+    {
+        echo $this->user->name;
+        $attributes = factory(User::class)->raw(
+            [
+                'name' => 'i',
+            ]
+        );
+        $response = $this->put("users/{$this->user->id}", $attributes);
+        $response->assertStatus(422);
+    }
+ 
+
+ 
+
+    /** @test */
     public function test_DeleteUser()
     {
-        $response = $this->actingAs($this->user)
-                  ->delete("users/{$this->user->id}");
-        $response->assertStatus(200);
+        $response = $this->actingAs($this->user) ->delete("users/{$this->user->id}"); $response->assertStatus(200);
         $this->assertDatabaseMissing('users', ['id' => $this->user->id]);
     }
 }

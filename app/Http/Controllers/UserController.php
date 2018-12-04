@@ -86,6 +86,19 @@ class UserController extends Controller
     public function update(Request $request, $id)
     {
         //
+        $validatedData = $request->validate(
+            [
+                'email' => 'email|unique:users|max:255',
+                'name' => 'string|between:10,50',
+            ]
+        );
+        $user = User::findOrFail($id);
+        /* slime */
+        /* endslime */
+        dd($request);
+        $user->update($request->all());
+        return response(200);
+
     }
 
     /**
@@ -102,4 +115,4 @@ class UserController extends Controller
         $user->delete();
         return response(200);
     }
-}
+} 
