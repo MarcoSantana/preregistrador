@@ -166,7 +166,7 @@ class UserTest extends TestCase
         $this->newUser = factory(\App\User::class)->create();
         // echo $this->user->name;
         $attributes = ['name' => 'i',];
-        $response = $this->put("users/{$this->user->id}", []);
+        $response = $this->json('PATCH',"users/{$this->user->id}", []);
         $response->assertStatus(422);
     }
  
