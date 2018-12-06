@@ -42,7 +42,7 @@ class UserTest extends TestCase
     /** @test */
     public function test_ShowUsers()
     {
-        $response = $this->get('/users');
+        $response = $this->get('api/users');
         $response ->assertStatus(200) ;
         $response->assertJsonStructure(
             [
@@ -61,7 +61,7 @@ class UserTest extends TestCase
     /** @test */
     public function test_ShowUser()
 {
-    $response = $this->get("/users/{$this->user->id}");
+    $response = $this->get("api/users/{$this->user->id}");
     $response->assertStatus(200);
 
     $response->assertJsonStructure(
@@ -92,7 +92,7 @@ class UserTest extends TestCase
     public function test_CreateUser()
     {
     $this->newUser = factory(\App\User::class)->make();
-    $response = $this->actingAs($this->user)->post('users', [
+    $response = $this->actingAs($this->user)->post('api/users', [
         'name' => $this->newUser->name,
         'email' => $this->newUser->email,
         'password' => $this->newUser->password,
@@ -110,7 +110,7 @@ class UserTest extends TestCase
     /** @test */
     public function test_CanNotCreateUserWithInvalidName()
     {
-        $response = $this->actingAs($this->user)->post('users', [
+        $response = $this->actingAs($this->user)->post('api/users', [
             'name' => str_repeat('a', 51),
             'email' => $this->user->email,
             'password' => 'secret',
@@ -122,7 +122,7 @@ class UserTest extends TestCase
     /** @test */
     public function test_CanNotCreateUserWithInvalidEmail()
     {
-        $response = $this->actingAs($this->user)->post('users', [
+        $response = $this->actingAs($this->user)->post('api/users', [
             'name' => $this->user->name,
             'email' => str_repeat('a', 256),
             'password' => 'secret',
@@ -140,13 +140,13 @@ class UserTest extends TestCase
                 'name' => $this->newUser->name,
             ]
         );
-        $response = $this->put("users/{$this->user->id}", $attributes);
+        $response = $this->put("api/users/{$this->user->id}", $attributes);
+        $response->assertStatus(200);
         $this->assertDatabaseHas('users',
             [
                 'name' => $this->newUser->name
             ]
         );
-        $response->assertStatus(200);
     }
 
     /** @test */
@@ -155,14 +155,14 @@ class UserTest extends TestCase
         $this->newUser = factory(\App\User::class)->create();
         // echo $this->user->name;
         $attributes = ['name' => 'i',];
-        $response = $this->json('PATCH',"users/{$this->user->id}", []);
+        $response = $this->json('PATCH',"api/users/{$this->user->id}", []);
         $response->assertStatus(422);
     }
 
     /** @test */
     public function test_DeleteUser()
     {
-        $response = $this->actingAs($this->user) ->delete("users/{$this->user->id}"); $response->assertStatus(200);
+        $response = $this->actingAs($this->user) ->delete("api/users/{$this->user->id}"); $response->assertStatus(200);
         $this->assertDatabaseMissing('users', ['id' => $this->user->id]);
     }
 

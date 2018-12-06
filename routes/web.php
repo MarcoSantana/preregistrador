@@ -25,5 +25,6 @@ Route::get('/home', 'HomeController@index')->name('home');
 Route::get('/users/{id}', 'UserController@show');
 Route::post('/users', 'UserController@store' );
 */
-Route::apiResource('users', 'UserController')->middleware('auth');
+
+/* Route::apiResource('users', 'UserController')->middleware('auth'); */
 

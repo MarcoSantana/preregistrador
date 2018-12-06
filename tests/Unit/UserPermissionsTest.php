@@ -21,6 +21,7 @@ class UserPermissionsTest extends TestCase
         parent::setUp();
         $this->app->make(\Spatie\Permission\PermissionRegistrar::class)->registerPermissions();
         $this->user = factory(\App\User::class)->create();
+        //TODO Create a user of each kind. Factory??
     }
 
     /**
@@ -30,9 +31,10 @@ class UserPermissionsTest extends TestCase
      */
     public function test_OnlyRegisteredUserCanListUsers()
     {
-       $response = $this->get('/users');
+       $response = $this->get('api/users');
        /* dd($response); */
        $response->assertStatus(404);
+       $response = $this->actingAs($this->user)->get('api/users');
     }
     
 }
