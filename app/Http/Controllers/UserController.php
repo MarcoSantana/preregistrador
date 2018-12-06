@@ -16,7 +16,8 @@ class UserController extends Controller
     public function index()
     {
         //
-        return \App\User::all();
+        /* return \App\User::all(); */
+        return response()->json(User::all()->toArray());
     }
 
     /**

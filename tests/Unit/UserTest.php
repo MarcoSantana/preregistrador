@@ -15,6 +15,7 @@ use Illuminate\Foundation\Testing\WithoutMiddleware;
 
 class UserTest extends TestCase
 {
+    use WithoutMiddleware;
     use RefreshDatabase;
     // use DatabaseMigrations;
     // use HasRoles;
@@ -145,8 +146,6 @@ class UserTest extends TestCase
                 'name' => $this->newUser->name
             ]
         );
-        // $this->assertTrue
-
         $response->assertStatus(200);
     }
 
@@ -159,9 +158,6 @@ class UserTest extends TestCase
         $response = $this->json('PATCH',"users/{$this->user->id}", []);
         $response->assertStatus(422);
     }
- 
-
- 
 
     /** @test */
     public function test_DeleteUser()
@@ -169,4 +165,5 @@ class UserTest extends TestCase
         $response = $this->actingAs($this->user) ->delete("users/{$this->user->id}"); $response->assertStatus(200);
         $this->assertDatabaseMissing('users', ['id' => $this->user->id]);
     }
+
 }
