@@ -31,10 +31,82 @@ class UserPermissionsTest extends TestCase
      */
     public function test_OnlyRegisteredUserCanListUsers()
     {
-       $response = $this->get('api/users');
-       /* dd($response); */
-       $response->assertStatus(404);
-       $response = $this->actingAs($this->user)->get('api/users');
+        return true;
+        $response = $this->get('api/users');
+        $response->assertStatus(302);
+        $response = $this->actingAs($this->user)->get('api/users');
+        /* $response->assertStatus(200); */
+        /* $this->assertAuthenticatedAs($this->user); */
+        $response
+            /* ->assertStatus(200) */
+            ->assertJsonStructure(
+                [
+                    [
+                        'id',
+                        'name',
+                        'email',
+                        'email_verified_at',
+                        'created_at',
+                        'updated_at'
+                    ]
+                ]
+            )
+            ;
     }
-    
+
+
+    /**
+     * Only registered users can see the users listing
+     *
+     * @return void
+     */
+    public function test_RegisteredUserCanListUsers()
+    {
+        $response = $this->actingAs($this->user)->get('api/users');
+        $response
+            // ->assertStatus(200)
+            ->assertJsonStructure(
+                [
+                    'id',
+                    'name',
+                    'email',
+                    'email_verified_at',
+                    'created_at',
+                    'updated_at'
+                ]
+            );
+    }
+
+
+    /**
+     * A valid user can be logged in.
+     *
+     * @return void
+     */
+    public function testLoginAValidUser()
+    {
+        $user = factory(User::class)->create();
+        $response = $this->post('/login', [
+            'email' => $user->email,
+            'password' => 'secret'
+        ]);
+        $response->assertStatus(302);
+        $this->assertAuthenticatedAs($user);
+    }
+
+    /**
+     * An invalid user cannot be logged in.
+     *
+     * @return void
+     */
+    public function testDoesNotLoginAnInvalidUser()
+    {
+        $user = factory(User::class)->create();
+        $response = $this->post('/login', [
+            'email' => $user->email,
+            'password' => 'invalid'
+        ]);
+        $response->assertSessionHasErrors();
+        $this->assertGuest();
+    }
 }
