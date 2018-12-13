@@ -1,0 +1,10 @@
+
+* TODO Registered User Can List Users
+:PROPERTIES:
+:TEST_SUITE: Unit/UserPermissionsTest
+:ISSUES: It is redirecting to home
+:END:
+I assume that due to auth it cannot list users and redirects home instead.
+* Login A Valid User
+:PROPERTIES:
+
