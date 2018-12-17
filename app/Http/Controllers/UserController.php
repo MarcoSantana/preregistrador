@@ -38,14 +38,13 @@ class UserController extends Controller
      */
     public function store(UserRequest $request)
     {
-        //
         $validatedData = $request->validate([
             'email' => 'required|email|unique:users|max:255',
             'name' => 'required|string|between:10,50',
             'password' => 'required'
 
         ]);
-        
+
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
