@@ -25,3 +25,7 @@ Route::group(['prefix' => 'auth'], function() {
             Route::get('user', 'AuthController@user');
         });
 });
+
+// Routes to be refactored
+Route::get('users', 'UserController@index');
+
