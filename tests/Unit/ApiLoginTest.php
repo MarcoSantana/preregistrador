@@ -28,58 +28,64 @@ class ApiLoginTest extends TestCase
 
     }
 
-    // public function testUserCanSignup()
-    // {
-
-    //     return void;
-    // }
+    /** @test */
+    public function testUserCanSignup()
+    {
+        $body = [
+            'name' => $this->user->name,
+            'email' => $this->user->email,
+            'password' => 'secret',
+            'password_default' => 'secret',
+        ];
+        $response = $this->client->request(
+            'POST',
+            'auth/signup',
+            [
+                'headers' => [
+                    'Content-Type' => 'application/x-www-form-urlencoded',
+                    'X-Requested-With' => 'XMLHttpRequest'
+                ],
+                'form_params' => [
+                    'name' => $this->user->name,
+                    'email' => $this->user->email,
+                    'password' => 'secret',
+                    'password_confirmation' => 'secret',
+                ]
+            ]
+        );
+        $code = $response->getStatusCode(); 
+        $this->assertTrue($code == 201);
+        $contentType = $response->getHeaders()["Content-Type"][0];
+        $this->assertEquals("application/json", $contentType);
+        $this->assertEquals('{"message":"Usuario creado exitosamente"}', $response->getBody()->getContents());
+    } 
 
     /** @test */
-   public function testUserCanSignup()
-   {
-       $body = [
-           'name' => $this->user->name,
-           'email' => $this->user->email,
-           'password' => 'secret',
-           'password_default' => 'secret',
-       ];
-       $response = $this->client->request(
-           'POST',
-           'auth/signup',
-           [
-               'headers' => [
-                   'Content-Type' => 'application/x-www-form-urlencoded',
-                   'X-Requested-With' => 'XMLHttpRequest'
-               ],
-               'form_params' => [
-                   'name' => $this->user->name,
-                   'email' => $this->user->email,
-                   'password' => 'secret',
-                   'password_confirmation' => 'secret',
-               ]
-           ]
-       );
-       $code = $response->getStatusCode(); 
-       $this->assertTrue($code == 201);
-       // dd($response);
-       $contentType = $response->getHeaders()["Content-Type"][0];
-       $this->assertEquals("application/json", $contentType);
-       /*$this->json('POST','api/auth/signup', $body,
-                   [
-                       'Content-Type' => 'application/x-www-form-urlencoded',
-                       'X-Requested-With' => 'XMLHttpRequest'
-                   ])
-           ->assertStatus(201)
-           ->assertJsonStructure(
-               [
-                   'token_type',
-                   'expires_in',
-                   'access_token',
-               ]
-
-           );
-       */
-   } 
+    public function testUserCanLogin()
+    {
+        $user =factory(User::class)->create(); 
+        $response = $this->client->request(
+            'POST',
+            'auth/login',
+            [
+                'form_params' => [
+                    'email' => 'prueba@prueba.com',
+                    'password' => 'secret',
+                ]
+            ]
+        );
+        $body = $response->getBody()->getContents();
+        $this->assertEquals($response->getStatusCode(), 200);
+        $nuResponse = $this->post('auth/login', 
+            [
+                'form_params' => [
+                    'email' => 'prueba@prueba.com',
+                    'password' => 'secret'
+                ]
+            ]
+                );
+        dd($response->getBody()->getContents());
+    }
 
 }
 
