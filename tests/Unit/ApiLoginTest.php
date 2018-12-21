@@ -61,13 +61,17 @@ class ApiLoginTest extends TestCase
     } 
 
     /** @test */
-    public function testUserCanLogin()
+    public function testUserCanLoginWithGuzzle()
     {
         $user =factory(User::class)->create(); 
         $response = $this->client->request(
             'POST',
             'auth/login',
             [
+                'headers' => [
+                    'Content-Type' => 'application/x-www-form-urlencoded',
+                    'X-Requested-With' => 'XMLHttpRequest',
+                ],
                 'form_params' => [
                     'email' => 'prueba@prueba.com',
                     'password' => 'secret',
@@ -76,16 +80,54 @@ class ApiLoginTest extends TestCase
         );
         $body = $response->getBody()->getContents();
         $this->assertEquals($response->getStatusCode(), 200);
-        $nuResponse = $this->post('auth/login', 
-            [
-                'form_params' => [
-                    'email' => 'prueba@prueba.com',
-                    'password' => 'secret'
-                ]
-            ]
-                );
-        dd($response->getBody()->getContents());
+        // dd($response->getBody()->getContents());
+        // dd($response);
     }
+
+    
+    /** @test */
+    public function testUserCanLogin()
+    {
+        $user = \App\User::first();
+        $response = $this->withHeaders([
+            'Content-Type' => 'application/x-www-form-urlencoded',
+            'X-Requested-With' => 'XMLHttpRequest'
+        ])->json('POST', 'api/auth/login', [
+                      'email' => 'vanessa.jacobi@example.org',
+                      'password' => 'secret'
+        ]);
+        dd($response);
+        $response->assertStatus(200);
+        /*          ->withHeaders([
+            'Content-Type' => 'application/x-www-form-urlencoded',
+            'X-Requested-With' => 'XMLHttpRequest',
+        ])->json('POST', 'api/auth/login', [
+            'email' => 'prueba@prueba.com',
+            'password' => 'secret'
+            ]);
+        $response->assertStatus(200);
+        */
+    }
+
+    /** @test */
+  public function testUserCanListUsers()
+  {
+      $user = factory(User::class)->make();
+      \Auth::loginUsingId($user);
+      $response = $this->actingAs($user)
+          ->get('api/users')
+          ->assertStatus(200);
+      dd($response->body);
+      $response->assertJsonStructure([
+          "id",
+          "name",
+          "email",
+          "email_verified_at",
+          "created_at",
+          "updated_at",
+      ]);
+  } 
+
 
 }
 
