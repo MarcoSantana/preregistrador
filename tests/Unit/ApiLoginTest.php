@@ -8,6 +8,8 @@ use Illuminate\Foundation\Testing\WithFaker;
 use Illuminate\Foundation\Testing\RefreshDatabase;
 use \App\User as User;
 use Illuminate\Foundation\Auth\User as Authenticatable;
+use GuzzleHttp\Exception\GuzzleException;
+use GuzzleHttp\Client as Client;
 
 class ApiLoginTest extends TestCase
 {
@@ -16,41 +18,113 @@ class ApiLoginTest extends TestCase
     public function setup()
     {
         parent::setUp();
-        $this->user =factory(User::class)->create(); 
+        $this->user =factory(User::class)->make(); 
         // $token = $this->user->createToken('Access Token')->accessToken;
+        $this->client = new Client([
+            // Base URI is used with relative requests
+            'base_uri' => 'http://preregistrador.test/api/',
+            'timeout'  => 2.0,
+        ]);
 
     }
 
-    // public function testUserCanSignup()
-    // {
-
-    //     return void;
-    // }
+    /** @test */
+    public function testUserCanSignup()
+    {
+        $body = [
+            'name' => $this->user->name,
+            'email' => $this->user->email,
+            'password' => 'secret',
+            'password_default' => 'secret',
+        ];
+        $response = $this->client->request(
+            'POST',
+            'auth/signup',
+            [
+                'headers' => [
+                    'Content-Type' => 'application/x-www-form-urlencoded',
+                    'X-Requested-With' => 'XMLHttpRequest'
+                ],
+                'form_params' => [
+                    'name' => $this->user->name,
+                    'email' => $this->user->email,
+                    'password' => 'secret',
+                    'password_confirmation' => 'secret',
+                ]
+            ]
+        );
+        $code = $response->getStatusCode(); 
+        $this->assertTrue($code == 201);
+        $contentType = $response->getHeaders()["Content-Type"][0];
+        $this->assertEquals("application/json", $contentType);
+        $this->assertEquals('{"message":"Usuario creado exitosamente"}', $response->getBody()->getContents());
+    } 
 
     /** @test */
-   public function testUserCanSignup()
-   {
-       $body = [
-           'name' => $this->user->name,
-           'email' => $this->user->email,
-           'password' => 'secret',
-           'password_default' => 'secret',
-       ];
+    public function testUserCanLoginWithGuzzle()
+    {
+        $user =factory(User::class)->create(); 
+        $response = $this->client->request(
+            'POST',
+            'auth/login',
+            [
+                'headers' => [
+                    'Content-Type' => 'application/x-www-form-urlencoded',
+                    'X-Requested-With' => 'XMLHttpRequest',
+                ],
+                'form_params' => [
+                    'email' => 'prueba@prueba.com',
+                    'password' => 'secret',
+                ]
+            ]
+        );
+        $body = $response->getBody()->getContents();
+        $this->assertEquals($response->getStatusCode(), 200);
+        // dd($response->getBody()->getContents());
+        // dd($response);
+    }
 
-       $this->json('POST','api/auth/signup', $body,
-                   [
-                       'Content-Type' => 'application/x-www-form-urlencoded',
-                       'X-Requested-With' => 'XMLHttpRequest'
-                   ])
-           ->assertStatus(201)
-           ->assertJsonStructure(
-               [
-                   'token_type',
-                   'expires_in',
-                   'access_token',
-               ]
-           );
-   } 
+    /** @test */
+    /* public function testUserCanLogin()*/
+    /* {*/
+    /*     $user = \App\User::first();*/
+    /*     $response = $this->withHeaders([*/
+    /*         'Content-Type' => 'application/x-www-form-urlencoded',*/
+    /*         'X-Requested-With' => 'XMLHttpRequest'*/
+    /*     ])->json('POST', 'api/auth/login', [*/
+    /*                   'email' => 'vanessa.jacobi@example.org',*/
+    /*                   'password' => 'secret'*/
+    /*     ]);*/
+    /*     $response->assertStatus(200);*/
+    /*     /*          ->withHeaders([*/
+    /*         'Content-Type' => 'application/x-www-form-urlencoded',*/
+    /*         'X-Requested-With' => 'XMLHttpRequest',*/
+    /*     ])->json('POST', 'api/auth/login', [*/
+    /*         'email' => 'prueba@prueba.com',*/
+    /*         'password' => 'secret'*/
+    /*         ]);*/
+    /*     $response->assertStatus(200);*/
+    /**/
+    /* }*/
+
+    /** @test */
+    public function testUserCanListUsers()
+    {
+        $user = factory(User::class)->make();
+        \Auth::loginUsingId($user);
+        $response = $this->actingAs($user)
+            ->get('api/users')
+            ->assertStatus(200);
+        $response->assertJsonStructure([
+            "id",
+            "name",
+            "email",
+            "email_verified_at",
+            "created_at",
+            "updated_at",
+        ]);
+    } 
+
 
 }
 
