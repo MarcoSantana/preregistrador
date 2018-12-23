@@ -8,3 +8,10 @@ I assume that due to auth it cannot list users and redirects home instead.
 * Login A Valid User
 :PROPERTIES:
 
+
+
+fd 
+* TODO Create BCO (card) model
+* TODO Create BCO factory
+* TODO Create BCO test
+

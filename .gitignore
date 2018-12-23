@@ -13,3 +13,5 @@ yarn-error.log
 .env
 .phpunit.result.cache
 TAGS
+public/js/app.js
+yarn.lock
